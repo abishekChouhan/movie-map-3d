@@ -1,32 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" type="text/css" href="../static/style.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <!--<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>-->
-    <script type="text/javascript" src="../static/plotlyjs-bundle.js"></script>
+  <title>MovieMap3D</title>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" type="text/css" href="../static/style.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script type="text/javascript" src="../static/plotlyjs-bundle.js"></script>
 </head>
 <body>
-    <script type="text/javascript" src="../static/default_figure.js"></script>   
+  <script type="text/javascript" src="../static/default_figure.js"></script>   
 
-    <div style="height: 10%; position: absolute; z-index: 30;background: white">
-        <form autocomplete="off" action="/search" method="POST">
-          <div class="autocomplete" style="width:300px;">
-            <input id="myInput" type="text" name="myMovie" placeholder="Enter Movie name..">
-        </div>
-        <button id="sendButton">Submit</button>
+  <div style="height: 10%; position: absolute; z-index: 30;background: white">
+    <form autocomplete="off" action="/search" method="POST">
+      <div class="autocomplete" style="width:300px;">
+        <input id="myInput" type="text" name="myMovie" placeholder="Enter Movie name..">
+      </div>
+      <button id="sendButton">Submit</button>
     </form>
     <h4>You have searched for: {{ movie_title }}</h4>
     <button onclick="stoprotation()">Stop Rotation</button>
-</div>
-
-
-<div style="display: block;position: absolute;width: 98%; height: 115%; top: -15%; overflow: hidden;">
-  <div id="myDiv" style="width: 100%; height: 100%;" ></div>
-</div>
-
-
+  </div>
+  
+  <div style="display: block;position: absolute;width: 98%; height: 115%; top: -15%; overflow: hidden;">
+    <div id="myDiv" style="width: 100%; height: 100%;" ></div>
+  </div>
 
 <script type="text/javascript">
   var val = $('#myInput').val();
@@ -34,8 +31,8 @@
 
   $('#sendButton').click(function(){
     $.ajax({
-        url: '/search',
-        data: val,
+        url: '/',
+        data: { "movie_name": val},
         type: 'POST'
 
     })
@@ -50,117 +47,98 @@
     a = document.createElement("DIV");
     a.setAttribute("id", this.id + "autocomplete-list");
     a.setAttribute("class", "autocomplete-items");
-    /*append the DIV element as a child of the autocomplete container:*/
     this.parentNode.appendChild(a);
-    /*for each item in the array...*/
     for (i = 0; i < arr.length; i++) {
-      /*check if the item starts with the same letters as the text field value:*/
       if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
-        /*create a DIV element for each matching element:*/
         b = document.createElement("DIV");
-        /*make the matching letters bold:*/
         b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
         b.innerHTML += arr[i].substr(val.length);
-        /*insert a input field that will hold the current array item's value:*/
         b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
-        /*execute a function when someone clicks on the item value (DIV element):*/
         b.addEventListener("click", function(e) {
-          /*insert the value for the autocomplete text field:*/
           inp.value = this.getElementsByTagName("input")[0].value;
-          /*close the list of autocompleted values,
-          (or any other open lists of autocompleted values:*/
           closeAllLists();
         });
         a.appendChild(b);
       }
     }
   });
-  /*execute a function presses a key on the keyboard:*/
   inp.addEventListener("keydown", function(e) {
     var x = document.getElementById(this.id + "autocomplete-list");
     if (x) x = x.getElementsByTagName("div");
       if (e.keyCode == 40) {
-        /*If the arrow DOWN key is pressed,
-        increase the currentFocus variable:*/
         currentFocus++;
-        /*and and make the current item more visible:*/
         addActive(x);
       } 
       else if (e.keyCode == 38) { //up
-        /*If the arrow UP key is pressed,
-        decrease the currentFocus variable:*/
         currentFocus--;
-        /*and and make the current item more visible:*/
         addActive(x);
       } 
       else if (e.keyCode == 13) {
-        /*If the ENTER key is pressed, prevent the form from being submitted,*/
         e.preventDefault();
         if (currentFocus > -1) {
-          /*and simulate a click on the "active" item:*/
           if (x) x[currentFocus].click();
         }
       }
     });
     function addActive(x) {
-      /*a function to classify an item as "active":*/
       if (!x) return false;
-      /*start by removing the "active" class on all items:*/
       removeActive(x);
       if (currentFocus >= x.length) currentFocus = 0;
       if (currentFocus < 0) currentFocus = (x.length - 1);
-      /*add class "autocomplete-active":*/
       x[currentFocus].classList.add("autocomplete-active");
-    }
+    };
     function removeActive(x) {
-      /*a function to remove the "active" class from all autocomplete items:*/
       for (var i = 0; i < x.length; i++) {
         x[i].classList.remove("autocomplete-active");
       }
-    }
+    };
     function closeAllLists(elmnt) {
-      /*close all autocomplete lists in the document,
-      except the one passed as an argument:*/
       var x = document.getElementsByClassName("autocomplete-items");
       for (var i = 0; i < x.length; i++) {
         if (elmnt != x[i] && elmnt != inp) {
           x[i].parentNode.removeChild(x[i]);
         }
       }
-    }
-    /*execute a function when someone clicks in the document:*/
+    };
     document.addEventListener("click", function (e) {
       closeAllLists(e.target);
     });
   }
 
-  /*An array containing all the country names in the world:*/
-  var movie_titles = def_figure.data[0].text
-  /*initiate the autocomplete function on the "myInput" element, and pass along the countries array as possible autocomplete values:*/
+  var movie_titles = def_figure.data[0].text;
   autocomplete(document.getElementById("myInput"), movie_titles);
 </script>
 
-<!--<script type="text/javascript" src="../static/figure.js"></script>-->
 <script type="text/javascript">
+  var x1 = {{x1}};
+  var y1 = {{y1}};
+  var z1 = {{z1}};
+  var text1 = {{text1|safe}};
+
+  var x2 = {{x2}};
+  var y2 = {{y2}};
+  var z2 = {{z2}};
+  var text2 = {{text2|safe}};
+
   var trace1 = {
-    x: {{x1}},
-    y: {{y1}}, 
-    z: {{z1}},
-    mode: 'markers+text',
-    text: {{text1|safe}},
-    textposition: 'top center',
+    x: x1,
+    y: y1, 
+    z: z1,
+    mode: "markers+text",
+    text: text1,
+    textposition: "top center",
     textfont: {
       size: 14,
-      color: 'black',
+      color: "black",
       borderpad: 4,
-      bgcolor: 'white'
+      bgcolor: "white"
     },
     marker: {
-      color: 'pruple',
+      color: "pruple",
       size: 8,
-      symbol: 'circle',
+      symbol: "circle",
       line: {
-        color: 'pruple',
+        color: "pruple",
         width: 0
       },
       opacity: 0.6
@@ -172,17 +150,17 @@
       bordercolor: 'yellow',
       font: {
         size: 20,
-        color: 'white',
+        color: 'white'
       }
     }
   };
 
   var trace2 = {
-    x: {{x2}}, 
-    y: {{y2}}, 
-    z: {{z2}},
+    x: x2,
+    y: y2,
+    z: z2,
     mode: 'markers',
-    text: {{text2|safe}},
+    text: text2,
     marker: {
       color: 'blue',
       size: 6,
@@ -200,7 +178,7 @@
       bordercolor: 'yellow',
       font: {
         size: 20,
-        color: 'white',
+        color: 'white'
       }
     }
   };
@@ -247,10 +225,8 @@
       width: 1.2,
       color: 'blue',
       colorscale: 'Viridis'
-  }
+    }
   };
-
-
 
   var data = [trace1, trace2, line1, line2, line3];
   var layout = {
@@ -312,12 +288,12 @@
     var camera1 = scene1.getCamera();
     console.log(camera1.eye);
     console.log(camera1.zoom);
-  }
+  };
   var interval = setInterval(function() {
     rotate('scene', Math.PI / 564);
 
     if(cnt == -1) clearInterval(interval);
-  }, 100)
+  }, 100);
 
   function rotate(id, angle) {
     var scene = gd._fullLayout[id]._scene;
@@ -327,7 +303,7 @@
     rtz.t += angle;
     camera.eye = rtz2xyz(rtz);
     scene.setCamera(camera);
-  }
+  };
 
   function xyz2rtz(xyz) {
     return {
@@ -335,7 +311,7 @@
       t: Math.atan(xyz.y / xyz.x),
       z: xyz.z
     };
-  }
+  };
 
   function rtz2xyz(rtz) {
     return {
@@ -343,7 +319,7 @@
       y: rtz.r * Math.sin(rtz.t),
       z: rtz.z
     };
-  }
+  };
 
 </script>
 
