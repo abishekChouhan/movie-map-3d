@@ -2,7 +2,8 @@
 <html>
 <head>
   <title>MovieMap3D</title>
-  <meta charset="utf-8"/>
+  <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+  <meta content="utf-8" http-equiv="encoding">
   <link rel="stylesheet" type="text/css" href="../static/style.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script type="text/javascript" src="../static/plotlyjs-bundle.js"></script>
@@ -11,7 +12,8 @@
   <script type="text/javascript" src="../static/default_figure.js"></script>   
 
   <div style="height: 10%; position: absolute; z-index: 30;background: white">
-    <form autocomplete="off" action="/search" method="POST">
+    <!-- <form autocomplete="off" action="/search" method="POST"> -->
+    <form autocomplete="off">
       <div class="autocomplete" style="width:300px;">
         <input id="myInput" type="text" name="myMovie" placeholder="Enter Movie name..">
       </div>
@@ -26,17 +28,6 @@
   </div>
 
 <script type="text/javascript">
-  var val = $('#myInput').val();
-  console.log(val)
-
-  $('#sendButton').click(function(){
-    $.ajax({
-        url: '/',
-        data: { "movie_name": val},
-        type: 'POST'
-
-    })
-  })
   function autocomplete(inp, arr) {
     var currentFocus;
     inp.addEventListener("input", function(e) {
@@ -110,15 +101,47 @@
 </script>
 
 <script type="text/javascript">
-  var x1 = {{x1}};
-  var y1 = {{y1}};
-  var z1 = {{z1}};
-  var text1 = {{text1|safe}};
+  var x1 = 0;
+  var y1 = 0;
+  var z1 = 0;
+  var text1 = 0;
 
-  var x2 = {{x2}};
-  var y2 = {{y2}};
-  var z2 = {{z2}};
-  var text2 = {{text2|safe}};
+  var x2 = 0;
+  var y2 = 0;
+  var z2 = 0;
+  var text2 = 0;
+  $('#sendButton').click(function(){
+    var val = $('#myInput').val();
+    console.log(val)
+    var req = $.ajax({
+          url: '/search',
+          type: 'POST',
+          data: { movie_name : val}
+    });
+    req.done(function(data){
+      console.log("aaaaaaaaaaaaaa")
+      x1 = data.x1;
+      y1 = data.y1;
+      z1 = data.z1;
+      text1 = data.text1;
+
+      x2 = data.x2;
+      y2 = data.y2;
+      z2 = data.z2;
+      text2 = data.text2;
+
+    });
+  });
+
+  // var x1 = {{x1}};
+  // var y1 = {{y1}};
+  // var z1 = {{z1}};
+  // var text1 = {{text1|safe}};
+
+  // var x2 = {{x2}};
+  // var y2 = {{y2}};
+  // var z2 = {{z2}};
+  // var text2 = {{text2|safe}};
 
   var trace1 = {
     x: x1,
