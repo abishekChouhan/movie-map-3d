@@ -27,7 +27,7 @@ def show_searched_movie_plot(movie_title):
     local_json = JSON
 
     search = movie_title
-    if search=='':
+    if not search:
         # with open('static/figure.js', 'w') as f:
         #     full = 'var figure = ' + str(local_json)
         #     f.write(full)
@@ -96,16 +96,12 @@ def show_searched_movie_plot(movie_title):
 def index():
     return render_template('index.html')
 
-@app.route('/search', methods=['POST'])
+@app.route('/search', methods=['GET','POST'])
 def search():
-    movie_title = request.args.get("movie_name")
-    # movie_title = 'Predator 2'
-    # print('nnnnnn'+movie_title)
-    # if request.method == 'POST':
-    #   movie_title = request.form['myMovie']
-    #   is_success = show_searched_movie_plot(movie_title)
-    #   print(is_success)
-    #   print(request.form['myMovie'])
+    movie_title = request.form['myMovie']
+    print('\n\n'+str(movie_title)+'\n')
+    # movie_title = 'Babe'
+
     big_data, small_data = show_searched_movie_plot(movie_title)
 
     x1, y1, z1, text1 = small_data['x'], small_data['y'], small_data['z'], small_data['text']
